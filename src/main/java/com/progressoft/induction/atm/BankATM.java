@@ -5,14 +5,27 @@ import com.progressoft.induction.atm.exceptions.InsufficientFundsException;
 import com.progressoft.induction.atm.exceptions.NotEnoughMoneyInATMException;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public abstract class BankATM implements ATM,BankingSystem{
     private List<Account> accounts;
     private BigDecimal balance;
+    private Map<Banknote,Integer> note;
+
     public BankATM(){
-        setAccounts(new ArrayList<Account>());
+        accounts = new ArrayList<Account>();
+        addAccount(new Account("123456789",new BigDecimal(1000)));
+        addAccount(new Account("111111111",new BigDecimal(1000)));
+        addAccount(new Account("222222222",new BigDecimal(1000)));
+        addAccount(new Account("333333333",new BigDecimal(1000)));
+        addAccount(new Account("444444444",new BigDecimal(1000)));
+
+        balance = new BigDecimal(2400);
+        note = new LinkedHashMap<Banknote,Integer>();
+        note.put(Banknote.FIFTY_JOD,10);
+        note.put(Banknote.TWENTY_JOD,20);
+        note.put(Banknote.TEN_JOD,100);
+        note.put(Banknote.FIVE_JOD,100);
     }
 
 
@@ -25,6 +38,17 @@ public abstract class BankATM implements ATM,BankingSystem{
                 throw new NotEnoughMoneyInATMException();
             if(amount.compareTo(getAccountBalance(accountNumber))==1)
                 throw new InsufficientFundsException();
+            List<Banknote> list= new ArrayList<Banknote>();
+            for(Banknote banknote : note.keySet()){
+                int counter = amount.divide(banknote.getValue()).intValue();
+                if(counter > note.get(banknote))
+                    counter = note.get(banknote);
+                note.put(banknote,note.get(banknote)-counter);
+                amount = amount.subtract((new BigDecimal(counter)).multiply(banknote.getValue()));
+                while (counter--!=0){
+                    list.add(banknote);
+                }
+            }
 
 
         }

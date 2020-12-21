@@ -6,6 +6,10 @@ public class Account {
     private String accountNmuber;
     private BigDecimal balance;
 
+    public Account(String accountNmuber, BigDecimal balance){
+
+    }
+
     public String getAccountNmuber() {
         return accountNmuber;
     }

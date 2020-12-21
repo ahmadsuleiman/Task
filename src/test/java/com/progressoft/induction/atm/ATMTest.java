@@ -18,7 +18,6 @@ class ATMTest {
     void setUp() {
         //TODO: initialize the atm here
         atm = new ABankATM();
-
     }
 
     @Test
