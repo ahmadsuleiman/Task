@@ -17,7 +17,7 @@ class ATMTest {
     @BeforeEach
     void setUp() {
         //TODO: initialize the atm here
-        atm = new ABankATM();
+        atm = new BankATM();
     }
 
     @Test

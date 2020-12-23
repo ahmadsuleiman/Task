@@ -7,7 +7,8 @@ public class Account {
     private BigDecimal balance;
 
     public Account(String accountNmuber, BigDecimal balance){
-
+        this.accountNmuber = accountNmuber;
+        this.balance = balance;
     }
 
     public String getAccountNmuber() {

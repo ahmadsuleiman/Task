@@ -7,7 +7,7 @@ import com.progressoft.induction.atm.exceptions.NotEnoughMoneyInATMException;
 import java.math.BigDecimal;
 import java.util.*;
 
-public abstract class BankATM implements ATM,BankingSystem{
+public class BankATM implements ATM,BankingSystem{
     private List<Account> accounts;
     private BigDecimal balance;
     private Map<Banknote,Integer> note;
@@ -31,37 +31,38 @@ public abstract class BankATM implements ATM,BankingSystem{
 
     @Override
     public List<Banknote> withdraw(String accountNumber, BigDecimal amount) {
-        try {
-            if(isValidAccount(accountNumber))
+
+            if(!isValidAccount(accountNumber))
                 throw new AccountNotFoundException();
-            if(amount.compareTo(balance)==1)
-                throw new NotEnoughMoneyInATMException();
             if(amount.compareTo(getAccountBalance(accountNumber))==1)
                 throw new InsufficientFundsException();
+            if(amount.compareTo(balance)==1)
+                throw new NotEnoughMoneyInATMException();
             List<Banknote> list= new ArrayList<Banknote>();
+            BigDecimal tempAmount = new BigDecimal(amount.intValue());
+
             for(Banknote banknote : note.keySet()){
-                int counter = amount.divide(banknote.getValue()).intValue();
+                int counter = tempAmount.divide(banknote.getValue()).intValue();
                 if(counter > note.get(banknote))
                     counter = note.get(banknote);
                 note.put(banknote,note.get(banknote)-counter);
-                amount = amount.subtract((new BigDecimal(counter)).multiply(banknote.getValue()));
+                tempAmount = tempAmount.subtract((new BigDecimal(counter)).multiply(banknote.getValue()));
                 while (counter--!=0){
                     list.add(banknote);
                 }
+                if(tempAmount.intValue()<=0)
+                    break;
             }
+            if(tempAmount.intValue()>0){
+                for(int i=0;i<list.size();i++){
+                    note.put(list.get(i),note.get(list.get(i))+1);
+                }
+                throw new NotEnoughMoneyInATMException();
+            }
+            debitAccount(accountNumber,amount);
+            return list;
 
 
-        }
-        catch(AccountNotFoundException e){
-            System.out.println("Account Not Found");
-        }
-        catch (InsufficientFundsException e){
-            System.out.println("Not Enough Money In Balance");
-        }
-        catch (NotEnoughMoneyInATMException e){
-            System.out.println("Not Enough Money In ATM");
-        }
-        return null;
     }
 
     @Override
